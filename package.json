@@ -1,6 +1,6 @@
 {
-  "name": "@radui1398/pdf-merger",
-  "version": "5.1.2",
+  "name": "@radui1398/pdf-merger-js",
+  "version": "5.1.3",
   "description": "merge multiple PDF documents, or parts of them, to a new PDF document",
   "type": "module",
   "engines": {

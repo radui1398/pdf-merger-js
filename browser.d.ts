@@ -4,7 +4,7 @@
 //                 Daniel Hammer <https://github.com/danmhammer/>
 //                 Lukas Loeffler <https://github.com/LukasLoeffler>
 
-declare module "pdf-merger-js/browser" {
+declare module "@radui1398/pdf-merger-js/browser" {
   class PDFMerger {
     constructor();
     /**

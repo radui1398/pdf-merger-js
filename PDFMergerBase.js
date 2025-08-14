@@ -31,7 +31,8 @@ export default class PDFMergerBase {
    */
   _loadOptions = {
     // allow merging of encrypted pdfs (issue #88)
-    ignoreEncryption: true
+    ignoreEncryption: true,
+    password: ''
   }
 
   constructor () {

@@ -4,7 +4,7 @@
 
 import { PathLike } from "fs-extra";
 
-declare module "pdf-merger-js" {
+declare module "@radui1398/pdf-merger-js" {
   class PDFMerger {
     constructor();
     /**
