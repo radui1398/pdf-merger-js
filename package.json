@@ -1,5 +1,5 @@
 {
-  "name": "pdf-merger-js",
+  "name": "@radui1398/pdf-merger",
   "version": "5.1.2",
   "description": "merge multiple PDF documents, or parts of them, to a new PDF document",
   "type": "module",
@@ -24,7 +24,10 @@
       "browser"
     ]
   },
-  "repository": "github:nbesli/pdf-merger-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbesli/pdf-merger-js.git"
+  },
   "keywords": [
     "pdf",
     "merge"
@@ -42,5 +45,12 @@
     "jsdom": "^23.0.1",
     "pdf-diff": "^0.1.1",
     "standard": "^17.1.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/nbesli/pdf-merger-js/issues"
+  },
+  "homepage": "https://github.com/nbesli/pdf-merger-js#readme"
 }
