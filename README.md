@@ -1,3 +1,9 @@
+# Forked by radui1398
+This fork is replacing pdf-lib with @cantoo/pdf-lib, a better maintained library.
+After pdf-merger-js will also update the library with a better one, this project will be removed.
+
+Install with: npm install @radui1398/pdf-merger-js
+
 # Description
 
 This node.js library can **merge multiple PDF documents**, or parts of them, to one new PDF document. You can do this by using the **command line interface** or from within your **node.js** or even directly in the **browser**.

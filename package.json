@@ -32,8 +32,8 @@
   "author": "nbesli",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.1.0",
-    "pdf-lib": "^1.17.1"
+    "@cantoo/pdf-lib": "^2.4.2",
+    "commander": "^11.1.0"
   },
   "devDependencies": {
     "fs-extra": "^11.2.0",
