@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nbesli/pdf-merger-js.git"
+    "url": "git+https://github.com/radui1398/pdf-merger-js.git"
   },
   "keywords": [
     "pdf",
@@ -50,7 +50,7 @@
     "test": "test"
   },
   "bugs": {
-    "url": "https://github.com/nbesli/pdf-merger-js/issues"
+    "url": "https://github.com/radui1398/pdf-merger-js/issues"
   },
-  "homepage": "https://github.com/nbesli/pdf-merger-js#readme"
+  "homepage": "https://github.com/radui1398/pdf-merger-js#readme"
 }
