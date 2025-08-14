@@ -26,16 +26,26 @@ export default class PDFMergerBase {
   /**
    * The load options for pdf-lib.
    *
-   * @type { import('pdf-lib').LoadOptions }
+   * @type { import('@cantoo/pdf-lib').LoadOptions }
    * @protected
    */
   _loadOptions = {
-    // allow merging of encrypted pdfs (issue #88)
+    // in order to bypass passwordless encryption we set the password to ''
     ignoreEncryption: true,
     password: ''
   }
 
-  constructor () {
+  /**
+   * Default constructor
+   *
+   * @param { import('@cantoo/pdf-lib').LoadOptions } loadOptions
+   */
+  constructor (loadOptions = {}) {
+    this._loadOptions = {
+      ...this._loadOptions,
+      ...loadOptions
+    }
+
     this.reset()
   }
 
