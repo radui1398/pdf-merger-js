@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/radui1398/pdf-merger-js#readme",
   "name": "@radui1398/pdf-merger-js-node",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -41,7 +41,7 @@
     "node": ">=22.12.0"
   },
   "dependencies": {
-    "@radui1398/pdf-merger-js": "^6.0.0",
+    "@radui1398/pdf-merger-js": "^6.0.1",
     "commander": "^15.0.0"
   },
   "scripts": {

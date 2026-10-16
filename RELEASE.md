@@ -1,3 +1,8 @@
+# 6.0.1
+
+- Publish a verification release for GitHub Actions Trusted Publishing on both packages.
+- No library API or runtime behavior changes from 6.0.0.
+
 # 6.0.0
 
 - Preserve npm publication acceptance receipts and wait for registry processing without duplicate submissions; query fresh metadata and report pending publication separately from failure.

@@ -36,7 +36,7 @@ Run `npm ci` and `npm run build` at the repository root. This private npm worksp
 
 Test tools remain root development dependencies. PDF.js and a canvas renderer compare page structure, text and rendered pixels. These tools are not installed by consumers; the legacy comparator and its override have been removed.
 
-Both packages are prepared as version 6.0.0. Release the web package before the Node package, which depends on it. Publishing is started manually through the Manual release workflow, after validation.
+Both packages are prepared as version 6.0.1, a verification release for GitHub Actions Trusted Publishing. Release the web package before the Node package, which depends on it. Publishing is started manually through the Manual release workflow, after validation.
 
 ## Usage
 

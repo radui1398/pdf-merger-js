@@ -2,7 +2,7 @@
 
 > Merge PDFs in browsers using File, Blob or byte arrays. No CLI or Commander dependency.
 
-Version: 6.0.0. ESM package.
+Version: 6.0.1. ESM package.
 
 Install: `npm install @radui1398/pdf-merger-js`.
 

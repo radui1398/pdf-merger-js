@@ -2,7 +2,7 @@
 
 > Merge PDFs with the Node.js API or the pdf-merge CLI. Supports filesystem paths and Buffer output.
 
-Version: 6.0.0. ESM package.
+Version: 6.0.1. ESM package.
 
 Install: `npm install @radui1398/pdf-merger-js-node`.
 
