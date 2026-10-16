@@ -53,3 +53,20 @@ test('refuses publication from a dirty checkout', async () => {
   await writeFile(path.join(directory, 'release.json'), JSON.stringify(manifest))
   await expect(publish()).rejects.toThrow()
 })
+
+test('accepted but pending package is not submitted again', async () => {
+  const web = manifest.packages[0]
+  await writeFile(path.join(directory, 'submitted.json'), JSON.stringify({ [`${web.name}@${web.version}`]: web.integrity }))
+  await expect(publish('--wait-ms=0')).rejects.toMatchObject({ code: 2 })
+  await expect(readFile(path.join(directory, 'published.log'))).rejects.toMatchObject({ code: 'ENOENT' })
+  await writeFile(path.join(directory, 'state.json'), JSON.stringify({ [web.name]: web.integrity }))
+  await publish()
+  expect(await readFile(path.join(directory, 'published.log'), 'utf8')).toBe('node\n')
+})
+test('records acceptance from an earlier invocation and waits without publishing', async () => {
+  const web = manifest.packages[0]
+  await expect(publish(`--submitted=${web.name}`, '--wait-ms=0')).rejects.toMatchObject({ code: 2 })
+  const receipt = JSON.parse(await readFile(path.join(directory, 'submitted.json')))
+  expect(receipt[`${web.name}@${web.version}`]).toBe(web.integrity)
+  await expect(readFile(path.join(directory, 'published.log'))).rejects.toMatchObject({ code: 'ENOENT' })
+})

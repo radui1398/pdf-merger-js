@@ -212,3 +212,9 @@ Both packages explicitly publish publicly to `https://registry.npmjs.org/` and i
 2. For local publication, authenticate with `npm login` and confirm the account with `npm whoami`. Never commit npm credentials. For the workflow, configure trusted publishers and the `npm-release` environment as described above; local authentication is not used by OIDC.
 3. Run `npm run release:prepare -- 6.0.0` using a supported development Node version, followed by `npm run release:verify`. The manifest must report `sourceDirty: false` before publication. Rebuild archives after the final commit; do not edit that field manually.
 4. For a first package that requires local bootstrap publication, use the validated archives with `node scripts/publish-release.js release-artifacts` only when ready to publish. Otherwise start Manual release for the full committed SHA. Both paths publish web before Node.
+
+### npm processing delays
+
+A successful `npm publish` can be accepted before the version is publicly visible. The publisher saves acceptance receipts in `release-artifacts/submitted.json`, queries with `--prefer-online`, and waits up to ten minutes per package. If still pending, it exits with code 2 without submitting the next package. Rerun using the same directory and archives; accepted versions are not submitted twice. `--wait-ms=<milliseconds>` changes the visibility wait.
+
+When upgrading from a publisher that did not save receipts, use `--submitted=<package-name>` only after npm explicitly reported successful publication of that exact validated archive. Do not regenerate the archives or alter integrity values while a release is pending. Receipts must be retained alongside the original archives when resuming on another runner.

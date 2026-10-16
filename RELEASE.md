@@ -1,5 +1,7 @@
 # 6.0.0
 
+- Preserve npm publication acceptance receipts and wait for registry processing without duplicate submissions; query fresh metadata and report pending publication separately from failure.
+
 - Set explicit public npm publishing configuration and workspace repository metadata; check checkout cleanliness after packing regenerates documentation.
 
 - Validate page selectors and document bounds before appending pages; cap selections at 100,000 pages.
