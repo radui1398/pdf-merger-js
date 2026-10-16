@@ -1,0 +1,54 @@
+{
+  "description": "merge multiple PDF documents, or parts of them, to a new PDF document",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radui1398/pdf-merger-js.git",
+    "directory": "node"
+  },
+  "keywords": [
+    "pdf",
+    "merge"
+  ],
+  "author": "nbesli",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/radui1398/pdf-merger-js/issues"
+  },
+  "homepage": "https://github.com/radui1398/pdf-merger-js#readme",
+  "name": "@radui1398/pdf-merger-js-node",
+  "version": "6.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "llms.txt",
+    "llms-full.txt"
+  ],
+  "bin": {
+    "pdf-merge": "./dist/cli.js"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@radui1398/pdf-merger-js": "^6.0.0",
+    "commander": "^15.0.0"
+  },
+  "scripts": {
+    "prepack": "npm --prefix .. run build --silent && node ../scripts/generate-llms.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

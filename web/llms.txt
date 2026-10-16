@@ -1,0 +1,16 @@
+# @radui1398/pdf-merger-js
+
+> Merge PDFs in browsers using File, Blob or byte arrays. No CLI or Commander dependency.
+
+Version: 6.0.0. ESM package.
+
+Install: `npm install @radui1398/pdf-merger-js`.
+
+Import: `import PDFMerger from '@radui1398/pdf-merger-js'`.
+
+## Documentation
+
+- [Full agent guide](./llms-full.txt): Usage, API declarations, examples and limitations in one file.
+- [README](./README.md): Installation, examples and migration instructions.
+- [Public types](./dist/index.d.ts): Package-specific TypeScript API.
+- [Core types](./dist/core.d.ts): Shared API, page selectors and metadata.

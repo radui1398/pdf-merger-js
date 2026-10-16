@@ -1,0 +1,15 @@
+# @radui1398/pdf-merger-js-node
+
+> Merge PDFs with the Node.js API or the pdf-merge CLI. Supports filesystem paths and Buffer output.
+
+Version: 6.0.0. ESM package.
+
+Install: `npm install @radui1398/pdf-merger-js-node`.
+
+Import: `import PDFMerger from '@radui1398/pdf-merger-js-node'`.
+
+## Documentation
+
+- [Full agent guide](./llms-full.txt): Usage, API declarations, examples and limitations in one file.
+- [README](./README.md): Installation, examples and migration instructions.
+- [Public types](./dist/index.d.ts): Package-specific TypeScript API.

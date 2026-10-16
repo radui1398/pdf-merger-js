@@ -4,19 +4,28 @@
 
 import path from 'path'
 import fs from 'fs-extra'
-import pdfDiff from 'pdf-diff'
+import pdfDiff from './helpers/pdf-compare.js'
 import { jest } from '@jest/globals'
 
-import PDFMerger from '../browser'
+import PDFMerger from '@radui1398/pdf-merger-js'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
-const TMP_DIR = path.join(__dirname, 'tmp')
+const TMP_DIR = path.join(__dirname, 'tmp', 'PDFMerger-browser.test')
 
 jest.setTimeout(100000)
 
 let fileA
 let fileB
+const previousFetch = globalThis.fetch
+beforeAll(() => {
+  globalThis.fetch = jest.fn(async url => {
+    if (!['http:', 'https:'].includes(new URL(url).protocol)) throw new TypeError('Unsupported URL protocol')
+    if (String(url).endsWith('/404')) return { ok: false, status: 404, statusText: 'Not Found' }
+    return { ok: true, arrayBuffer: async () => fileA.slice().buffer }
+  })
+})
+afterAll(() => { globalThis.fetch = previousFetch })
 
 async function readFixtureAsUint8Array (file) {
   const buffer = await fs.readFile(path.join(FIXTURES_DIR, file))
@@ -168,12 +177,12 @@ describe('PDFMerger for browser', () => {
       expect(diff).toBeFalsy()
     })
 
-    const testIfFetch = typeof fetch !== 'undefined' ? test : test.skip
+    const testIfFetch = test
     testIfFetch('merge pdfs from urls', async () => {
       const merger = new PDFMerger()
 
       await merger.add(
-        'https://github.com/nbesli/pdf-merger-js/raw/master/test/fixtures/Testfile_A.pdf'
+        'https://fixtures.test/Testfile_A.pdf'
       )
       await merger.add(
         await readFixtureAsUint8Array('Testfile_B.pdf')
@@ -291,7 +300,7 @@ describe('PDFMerger for browser', () => {
       const merger = new PDFMerger()
 
       await expect(merger.add('h://google.com')).rejects.toThrow(Error)
-      await expect(merger.add('https://google.com')).rejects.toThrow(Error)
+      await expect(merger.add('https://fixtures.test/404')).rejects.toThrow(Error)
     })
   })
 

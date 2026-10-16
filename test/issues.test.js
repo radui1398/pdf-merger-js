@@ -3,11 +3,11 @@ import path from 'path'
 import fs from 'fs-extra'
 import { jest } from '@jest/globals'
 
-import PDFMerger from '../index'
+import PDFMerger from '@radui1398/pdf-merger-js-node'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
-const TMP_DIR = path.join(__dirname, 'tmp')
+const TMP_DIR = path.join(__dirname, 'tmp', 'issues.test')
 
 jest.setTimeout(10000)
 

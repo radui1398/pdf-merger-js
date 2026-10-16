@@ -1,4 +1,4 @@
-import { parsePagesString } from '../parsePagesString'
+import { parsePagesString } from '@radui1398/pdf-merger-js/core'
 
 describe('parsePagesString', () => {
   test('should parse lists', () => {

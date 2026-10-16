@@ -1,20 +1,24 @@
+import { startServer } from './helpers/http-server.js'
 import path from 'path'
 import fs from 'fs-extra'
 import util from 'util'
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { jest } from '@jest/globals'
-import pdfDiff from 'pdf-diff'
+import pdfDiff from './helpers/pdf-compare.js'
 
-const asyncExec = util.promisify(exec)
+const asyncExec = util.promisify(execFile)
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
-const TMP_DIR = path.join(__dirname, 'tmp')
+const TMP_DIR = path.join(__dirname, 'tmp', 'cli.test')
 
-jest.setTimeout(10000)
+jest.setTimeout(60000)
+let server
+beforeAll(async () => { server = await startServer() })
+afterAll(async () => { await server.close() })
 
 async function mergePDFsCli (outputFile, inputFiles) {
-  const { stdout, stderr } = await asyncExec(`node ./cli.js --output ${outputFile} ${inputFiles.join(' ')}`)
+  const { stdout, stderr } = await asyncExec(process.execPath, ['./node/dist/cli.js', '--output', outputFile, ...inputFiles])
   return { stdout, stderr }
 }
 
@@ -35,11 +39,11 @@ describe('issues', () => {
     expect(diff).toBeFalsy()
   })
 
-  const testIfFetch = typeof fetch !== 'undefined' ? test : test.skip
+  const testIfFetch = test
   testIfFetch('should merge two pdfs from URL', async () => {
     await mergePDFsCli(path.join(TMP_DIR, 'Testfile_AB.pdf'), [
-      'https://github.com/nbesli/pdf-merger-js/raw/master/test/fixtures/Testfile_A.pdf',
-      'https://github.com/nbesli/pdf-merger-js/raw/master/test/fixtures/Testfile_B.pdf'
+      `${server.url}/Testfile_A.pdf`,
+      `${server.url}/Testfile_B.pdf`
     ])
     const diff = await pdfDiff(
       path.join(FIXTURES_DIR, 'Testfile_AB.pdf'),

@@ -16,14 +16,29 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [22.x, 24.x, 26.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
+    - run: npm run docs:check
     - run: npm run standard
     - run: npm run test
+    - run: npm run typecheck
+    - run: npm run test:package
+    - name: Upload comparison failures
+      if: failure()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: pdf-differences-${{ matrix.node-version }}
+        path: test/artifacts/
+        if-no-files-found: ignore
+    - name: Production dependency audit
+      run: npm audit --omit=dev
+    - name: Development dependency audit report
+      continue-on-error: true
+      run: npm audit

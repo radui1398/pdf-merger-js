@@ -1,0 +1,97 @@
+name: Manual release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version matching both manifests
+        required: true
+      commit:
+        description: Full commit SHA on master to release
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.commit }}
+          fetch-depth: 0
+      - name: Validate requested revision
+        env:
+          RELEASE_COMMIT: ${{ inputs.commit }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$RELEASE_COMMIT"
+          git merge-base --is-ancestor HEAD origin/master
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: npm run docs:check
+      - run: npm run standard
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:package
+      - run: npm audit --omit=dev
+      - name: Retain visual differences
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-differences-${{ matrix.node }}
+          path: test/artifacts/
+          if-no-files-found: ignore
+  package:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.commit }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Prepare exact release archives
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: node scripts/prepare-release.js "$RELEASE_VERSION"
+      - run: npm run release:verify
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-release
+          path: release-artifacts/
+          if-no-files-found: error
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.commit }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install --global npm@11
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-release
+          path: release-artifacts/
+      - name: Verify artifact identity
+        env:
+          RELEASE_COMMIT: ${{ inputs.commit }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync("release-artifacts/release.json")); if(r.commit!==process.env.RELEASE_COMMIT || r.version!==process.env.RELEASE_VERSION) throw Error("Release identity mismatch")'
+      - run: node scripts/publish-release.js release-artifacts

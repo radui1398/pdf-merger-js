@@ -1,17 +1,21 @@
+import { startServer } from './helpers/http-server.js'
 import path from 'path'
 
 import fs from 'fs-extra'
-import pdfDiff from 'pdf-diff'
+import pdfDiff from './helpers/pdf-compare.js'
 import { PDFDocument } from '@cantoo/pdf-lib'
 import { jest } from '@jest/globals'
 
-import PDFMerger from '../index'
+import PDFMerger from '@radui1398/pdf-merger-js-node'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
-const TMP_DIR = path.join(__dirname, 'tmp')
+const TMP_DIR = path.join(__dirname, 'tmp', 'PDFMerger.test')
 
-jest.setTimeout(10000)
+jest.setTimeout(60000)
+let server
+beforeAll(async () => { server = await startServer() })
+afterAll(async () => { await server.close() })
 
 describe('PDFMerger', () => {
   beforeAll(async () => {
@@ -121,15 +125,16 @@ describe('PDFMerger', () => {
       expect(diff).toBeFalsy()
     })
 
-    const testIfFetch = typeof fetch !== 'undefined' ? test : test.skip
+    const testIfFetch = test
     testIfFetch('provide input as URL', async () => {
       const merger = new PDFMerger()
-      const TestfileAURL = new URL('https://github.com/nbesli/pdf-merger-js/raw/master/test/fixtures/Testfile_A.pdf')
+      const TestfileAURL = new URL(`${server.url}/Testfile_A.pdf`)
       expect(TestfileAURL).toBeInstanceOf(URL)
       await merger.add(TestfileAURL)
-      const TestfileBURL = new URL('https://github.com/nbesli/pdf-merger-js/raw/master/test/fixtures/Testfile_B.pdf')
+      const TestfileBURL = new URL(`${server.url}/Testfile_B.pdf`)
       expect(TestfileBURL).toBeInstanceOf(URL)
       await merger.add(TestfileBURL)
+      await merger.save(path.join(TMP_DIR, 'Testfile_AB.pdf'))
       const diff = await pdfDiff(
         path.join(FIXTURES_DIR, 'Testfile_AB.pdf'),
         path.join(TMP_DIR, 'Testfile_AB.pdf')

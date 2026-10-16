@@ -1,0 +1,119 @@
+# @radui1398/pdf-merger-js
+
+> Merge PDFs in browsers using File, Blob or byte arrays. No CLI or Commander dependency.
+
+Version: 6.0.0. ESM package.
+
+Install: `npm install @radui1398/pdf-merger-js`.
+
+Import: `import PDFMerger from '@radui1398/pdf-merger-js'`.
+
+# @radui1398/pdf-merger-js
+
+Browser PDF merger. Version 6 exports the browser implementation by default; Node.js users should migrate to `@radui1398/pdf-merger-js-node`.
+
+```sh
+npm install @radui1398/pdf-merger-js
+```
+
+```js
+import PDFMerger from '@radui1398/pdf-merger-js'
+
+const merger = new PDFMerger()
+await merger.add(file) // File, Blob, Uint8Array, ArrayBuffer, URL or URL string
+await merger.add(otherFile, '1-3')
+const blob = await merger.saveAsBlob()
+await merger.save('merged') // Downloads merged.pdf
+```
+
+`saveAsBuffer()` returns a Uint8Array. `reset()` starts a fresh document; `setMetadata()` accepts producer, author, title and creator. The constructor accepts optional pdf-lib load options.
+
+`/web` and `/browser` alias the default export. `/core` exports `PDFMergerBase` and `parsePagesString`. The only direct runtime dependency is `@cantoo/pdf-lib`; no CLI or Commander is installed.
+
+## Agent documentation
+
+The npm package includes `llms.txt` (documentation index) and `llms-full.txt` (standalone usage guide and TypeScript API). These files are generated from the package metadata, README, generated public declarations and shared usage guidance.
+
+The library is authored in TypeScript and ships compiled ESM and generated declarations in `dist/`. Consumers use the same package imports without a build step.
+
+## Input validation and cancellation
+
+`await merger.add(input, pages, { signal, timeoutMs: 30000 })` supports cancellation and a timeout covering the whole download. Use `timeoutMs: 0` to disable it. Valid values are integers from 0 to 2,147,483,647. HTTP failures reject with the status code. Cancellation is checked before adding pages; synchronous PDF parsing cannot be interrupted. Await calls sequentially.
+
+Page selections use positive safe integers, preserve order and duplicates, and are limited to 100,000 pages. Invalid or out-of-bounds selections reject without appending pages. An empty array adds nothing. `null`, omitted pages and `'all'` select every page.
+
+FileReader failures, aborts and invalid results reject rather than leaving pending operations.
+
+## Usage rules
+
+- Await each `add()` call in the desired output order, then await saving. Do not mutate the same merger concurrently.
+- Page numbers are one-based. Omit pages, pass `null`, or use `'all'` to copy all pages. Examples: `1`, `[1, 3]`, `'1,3'`, `'1-3'`, `'1 to 3'`. Selected pages are appended in the specified order. Use valid page numbers within the source document.
+- `save()` and `saveAsBuffer()` do not reset the merger. Call synchronous `reset()` before starting an independent merge.
+- `setMetadata()` accepts producer, author, title and creator. Await it before saving.
+- Constructor options are forwarded to `@cantoo/pdf-lib` when loading inputs; defaults include `ignoreEncryption: true` and an empty password. Password-protected documents may require an explicit password.
+- Catch rejected promises from the library for invalid input, failed fetches, parsing errors and invalid pages.
+- Strings are URLs, not local filesystem paths. Pass a File from a file input for local documents. Remote URLs require browser fetch access and appropriate CORS headers.
+- `saveAsBuffer()` returns Uint8Array, not Node Buffer. `saveAsBlob()` returns a PDF Blob. `save(name)` triggers a DOM download and appends `.pdf`; pass a name without that extension.
+- `/web` and `/browser` are aliases of the default export. `/core` exposes PDFMergerBase and parsePagesString for reuse.
+- Version 6 changed the original package default to the browser API. Use `@radui1398/pdf-merger-js-node` for Node and CLI integrations.
+
+## Shared core API
+
+```ts
+import { PDFDocument, type LoadOptions } from '@cantoo/pdf-lib';
+export type PdfInput = Uint8Array | ArrayBuffer | Blob | URL;
+export type Pages = string | string[] | number | number[] | null;
+export interface AddOptions {
+    signal?: AbortSignal;
+    timeoutMs?: number;
+}
+export interface Metadata {
+    producer?: string;
+    author?: string;
+    title?: string;
+    creator?: string;
+}
+export default class PDFMergerBase<Input = PdfInput> {
+    protected _doc: PDFDocument | undefined;
+    protected _loadOptions: LoadOptions;
+    constructor(loadOptions?: LoadOptions);
+    reset(): void;
+    setMetadata(metadata: Metadata): Promise<void>;
+    add(input: Input, pages?: Pages, options?: AddOptions): Promise<void>;
+    protected _ensureDoc(): Promise<PDFDocument>;
+    protected _saveAsUint8Array(): Promise<Uint8Array<ArrayBuffer>>;
+    protected _saveAsBase64(): Promise<string>;
+    protected _getInputAsUint8Array(input: unknown, options?: AddOptions): Promise<Uint8Array>;
+}
+```
+
+## Core exports
+
+```ts
+export { default as PDFMergerBase } from './PDFMergerBase.js';
+export type { PdfInput, Pages, Metadata, AddOptions } from './PDFMergerBase.js';
+export { parsePagesString } from './parsePagesString.js';
+```
+
+## Page parser
+
+```ts
+export declare const MAX_SELECTED_PAGES = 100000;
+export declare function validatePageNumber(value: unknown): number;
+export declare function parsePagesString(pages: string, pageCount?: number): number[];
+```
+
+## Browser API
+
+```ts
+import type { AddOptions } from './core.js';
+import PDFMergerBase from './PDFMergerBase.js';
+export type { Pages, Metadata, AddOptions } from './core.js';
+export type PdfInput = import('./core.js').PdfInput | File | String | string;
+export default class PDFMerger extends PDFMergerBase<PdfInput> {
+    protected _getInputAsUint8Array(input: PdfInput, options?: AddOptions): Promise<Uint8Array>;
+    saveAsBuffer(): Promise<Uint8Array<ArrayBuffer>>;
+    saveAsBlob(): Promise<Blob>;
+    save(fileName: string): Promise<void>;
+}
+```

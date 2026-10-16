@@ -1,3 +1,13 @@
 node_modules/
 test/tmp
 fixtures/tmp
+/AGENTS.md
+
+web/dist/
+node/dist/
+
+.idea
+test/artifacts/
+release-artifacts/
+
+.DS_Store
